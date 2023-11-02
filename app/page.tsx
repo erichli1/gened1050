@@ -1,95 +1,175 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+
+import { styled } from "@mui/material/styles";
+import {
+  Alert,
+  Button,
+  Container,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useEffect, useState } from "react";
+import { processCsvIntoString } from "./processors";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import DownloadIcon from "@mui/icons-material/Download";
+import LoopIcon from "@mui/icons-material/Loop";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 export default function Home() {
+  const [file, setFile] = useState<File | null>();
+  const [numGroups, setNumGroups] = useState<number | null>(5);
+  const [regenerateTime, setRegenerateTime] = useState<number>(Date.now());
+  const [groups, setGroups] = useState<Array<Array<string>>>();
+  const [fileError, setFileError] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (file) {
+      setFileError(false);
+      setGroups(undefined);
+
+      if (!numGroups || numGroups <= 2) {
+        return;
+      }
+
+      processCsvIntoString(file, numGroups!, setGroups, setFileError);
+    }
+  }, [file, numGroups, regenerateTime]);
+
+  const createAndDownloadCSV = () => {
+    const csvData = [
+      ["Name", "Character"],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+    ];
+
+    const csvContent = csvData.map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "template.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main>
+      <Container maxWidth="sm">
+        <Typography variant="h3">GENED Group Generator</Typography>
+        <Button
+          variant="text"
+          onClick={createAndDownloadCSV}
+          startIcon={<DownloadIcon />}
+        >
+          Download template.csv here
+        </Button>
+        <br />
+        <br />
+        <Grid container>
+          <TextField
+            label="# of groups"
+            type="number"
+            size="small"
+            variant="outlined"
+            value={numGroups}
+            onChange={(e) => setNumGroups(parseInt(e.target.value))}
+          />
+          &nbsp;
+          <Button
+            component="label"
+            variant="contained"
+            color={file ? (fileError ? "error" : "success") : "primary"}
+            startIcon={
+              file ? (
+                fileError ? (
+                  <WarningAmberIcon />
+                ) : (
+                  <CheckCircleIcon />
+                )
+              ) : (
+                <CloudUploadIcon />
+              )
+            }
+            disabled={!numGroups || numGroups < 3}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+            {file ? file.name : "Upload file"}
+            <VisuallyHiddenInput
+              type="file"
+              accept=".csv"
+              onChange={(e) => {
+                setFile(null);
+                if (e.target.files) setFile(e.target.files[0]);
+              }}
             />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+          </Button>
+          &nbsp;
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<LoopIcon />}
+            onClick={() => {
+              setRegenerateTime(Date.now());
+            }}
+            disabled={!file || !numGroups || numGroups < 3}
+          >
+            Regenerate
+          </Button>
+        </Grid>
+        <br />
+        {(!numGroups || numGroups < 3) && (
+          <>
+            <Alert severity="warning">
+              Please make sure the number of groups is at least 3.
+            </Alert>
+            <br />
+          </>
+        )}
+        {fileError && (
+          <>
+            <Alert severity="error">
+              Invalid file. Please make sure you upload a CSV with only two
+              columns and where the first row includes a cell called Name.
+            </Alert>
+            <br />
+          </>
+        )}
+        {groups &&
+          groups.map((group, index) => (
+            <Typography variant="body1" key={index}>
+              <Typography component="span" fontWeight="bold">
+                Group {index + 1}:{" "}
+              </Typography>
+              {group.map((student) => student).join(", ")}
+            </Typography>
+          ))}
+        {groups && groups.length === 0 && (
+          <Alert severity="error">No groups possible.</Alert>
+        )}
+      </Container>
     </main>
-  )
+  );
 }
