@@ -7,34 +7,6 @@ import {
 } from "./verifiers";
 import { Dispatch, SetStateAction } from "react";
 
-// const TEST_PARSED = [
-//   ["addea gupta", "Shai-Li Ron"],
-//   ["Albert Zhang", "Max S"],
-//   ["Alice Jacob", "Avery Hansberger"],
-//   ["Avery Hansberger", "Eric Li"],
-//   ["Cheikh Fiteni", "Sarah Cao"],
-//   ["Darren Tran", "Rayha"],
-//   ["David Li", "Maxi Duncan"],
-//   ["Eliza Banbury", "Albert Zhang"],
-//   ["Eric Li", "addea gupta"],
-//   ["Hannah Frazer", "Eliza Banbury"],
-//   ["Hyuntae Choi", "Stephanie Osazuwa"],
-//   ["Kendra Morris", "Hyuntae Choi"],
-//   ["Lulu Troyer", "Hannah Frazer"],
-//   ["Max S", "Terry McCafferty"],
-//   ["Maxi Duncan", "Peter Luo"],
-//   ["Peter Luo", "Lulu Troyer"],
-//   ["Rayha", "Darren Tran"],
-//   ["Sarah Cao", "Alice Jacob"],
-//   ["Sean Zehnder", "Vlad Ivanchuk"],
-//   ["Shai-Li Ron", "Victor Flores"],
-//   ["Stephanie Osazuwa", "Will Wang"],
-//   ["Terry McCafferty", "Kendra Morris"],
-//   ["Victor Flores", "David Li"],
-//   ["Vlad Ivanchuk", "Sean Zehnder"],
-//   ["Will Wang", "Cheikh Fiteni"],
-// ];
-
 export function processCsvIntoString(
   file: File,
   numGroups: number,
@@ -60,7 +32,7 @@ export function processCsvIntoString(
 }
 
 // export function testProcess() {
-//   const rawMappings = TEST_PARSED;
+//   const rawMappings = TEST_MAPPING_DATA;
 //   const peopleList = generatePeopleList(rawMappings);
 //   const conflictsDict = generateConflictsDict(peopleList, rawMappings);
 //   generateGroupsIteratively(peopleList, 5, conflictsDict);

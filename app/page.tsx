@@ -16,6 +16,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import DownloadIcon from "@mui/icons-material/Download";
 import LoopIcon from "@mui/icons-material/Loop";
+import { TEST_MAPPING_DATA } from "./utils";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -50,19 +51,7 @@ export default function Home() {
   }, [file, numGroups, regenerateTime]);
 
   const createAndDownloadCSV = () => {
-    const csvData = [
-      ["Name", "Character"],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-    ];
+    const csvData = [["Name", "Character"], ...TEST_MAPPING_DATA];
 
     const csvContent = csvData.map((row) => row.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -79,7 +68,12 @@ export default function Home() {
   return (
     <main>
       <Container maxWidth="sm">
-        <Typography variant="h3">GENED Group Generator</Typography>
+        <Typography variant="h3">gened1050 groups</Typography>
+        <Typography variant="body1">
+          Upload a CSV of students and their characters to generate groups where
+          no student will be in a group with their character or the person
+          playing them.
+        </Typography>
         <Button
           variant="text"
           onClick={createAndDownloadCSV}

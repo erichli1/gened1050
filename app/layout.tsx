@@ -1,13 +1,7 @@
 "use client";
 
-import type { Metadata } from "next";
 import "./globals.css";
 import { createTheme, ThemeProvider } from "@mui/material";
-
-const metadata: Metadata = {
-  title: "GENED1050 Group Generator",
-  description: "Upload a CSV of matches and get a group.",
-};
 
 const theme = createTheme({
   typography: {
