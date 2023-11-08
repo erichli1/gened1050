@@ -35,11 +35,11 @@ export default function Home() {
   const [numGroups, setNumGroups] = useState<number | null>(5);
   const [regenerateTime, setRegenerateTime] = useState<number>(Date.now());
   const [groups, setGroups] = useState<Array<Array<string>>>();
-  const [fileError, setFileError] = useState<boolean>(false);
+  const [fileError, setFileError] = useState<string>("");
 
   useEffect(() => {
     if (file) {
-      setFileError(false);
+      setFileError("");
       setGroups(undefined);
 
       if (!numGroups || numGroups <= 2) {
@@ -96,10 +96,10 @@ export default function Home() {
           <Button
             component="label"
             variant="contained"
-            color={file ? (fileError ? "error" : "success") : "primary"}
+            color={file ? (fileError !== "" ? "error" : "success") : "primary"}
             startIcon={
               file ? (
-                fileError ? (
+                fileError !== "" ? (
                   <WarningAmberIcon />
                 ) : (
                   <CheckCircleIcon />
@@ -142,12 +142,9 @@ export default function Home() {
             <br />
           </>
         )}
-        {fileError && (
+        {fileError !== "" && (
           <>
-            <Alert severity="error">
-              Invalid file. Please make sure you upload a CSV with only two
-              columns and where the first row includes a cell called Name.
-            </Alert>
+            <Alert severity="error">{fileError}</Alert>
             <br />
           </>
         )}

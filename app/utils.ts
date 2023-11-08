@@ -6,6 +6,29 @@ export function containsAnyElements(
   return array1.some((item) => array2.includes(item));
 }
 
+// Check if arrays are identical
+export function haveSameElements<T>(array1: T[], array2: T[]): boolean {
+  if (array1.length !== array2.length) {
+    return false;
+  }
+
+  const sortedArray1 = [...array1].sort();
+  const sortedArray2 = [...array2].sort();
+
+  for (let i = 0; i < sortedArray1.length; i++) {
+    if (sortedArray1[i] !== sortedArray2[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Find the actual differences
+export function difference<T>(array1: T[], array2: T[]): T[] {
+  return array1.filter((item) => !array2.includes(item));
+}
+
 export const TEST_MAPPING_DATA = [
   ["person1", "person2"],
   ["person2", "person3"],

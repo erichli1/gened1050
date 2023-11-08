@@ -6,12 +6,13 @@ import {
   verifyNoConflicts,
 } from "./verifiers";
 import { Dispatch, SetStateAction } from "react";
+import { difference, haveSameElements } from "./utils";
 
 export function processCsvIntoString(
   file: File,
   numGroups: number,
   setGroups: Dispatch<SetStateAction<string[][] | undefined>>,
-  setFileError: Dispatch<SetStateAction<boolean>>
+  setFileError: Dispatch<SetStateAction<string>>
 ) {
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -19,11 +20,29 @@ export function processCsvIntoString(
     const rawMappings = parseCSVData(csvData as string);
 
     if (rawMappings.length === 0) {
-      setFileError(true);
+      setFileError(
+        "Invalid file. Please make sure you upload a CSV with only two columns and where the first row includes a cell called Name."
+      );
       return;
     }
 
-    const peopleList = generatePeopleList(rawMappings);
+    const [peopleList, checkingPeopleList] = generatePeopleList(rawMappings);
+    if (!haveSameElements(peopleList, checkingPeopleList)) {
+      const inFirstNotSecond = difference(peopleList, checkingPeopleList);
+      const inSecondNotFirst = difference(checkingPeopleList, peopleList);
+      setFileError(
+        `Invalid file. Not all students have a partner. Missing from first column: ${inSecondNotFirst.join(
+          ", "
+        )}. Missing from second column: ${inFirstNotSecond.join(", ")}.`
+      );
+      return;
+    }
+
+    if (new Set(peopleList).size !== peopleList.length) {
+      setFileError("Duplicate names found in the same column of the CSV file.");
+      return;
+    }
+
     const conflictsDict = generateConflictsDict(peopleList, rawMappings);
     setGroups(generateGroupsIteratively(peopleList, numGroups, conflictsDict));
   };
@@ -57,11 +76,15 @@ function parseCSVData(csvData: string) {
 
 function generatePeopleList(rawMappings: string[][]) {
   const peopleList: string[] = [];
+
+  const checkingPeopleList: string[] = [];
+
   for (const subarray of rawMappings) {
     peopleList.push(subarray[0]);
+    checkingPeopleList.push(subarray[1]);
   }
 
-  return peopleList;
+  return [peopleList, checkingPeopleList];
 }
 
 function generateConflictsDict(peopleList: string[], rawMappings: string[][]) {
